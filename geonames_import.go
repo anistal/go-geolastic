@@ -2,11 +2,24 @@ package main
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"os"
+	"reflect"
+	"strconv"
 	"time"
+
+	elastigo "github.com/mattbaird/elastigo/lib"
+)
+
+type GeoElement struct {
+	Id string
+}
+
+var (
+	host *string = flag.String("host", "localhost", "Elasticsearch Host")
 )
 
 func main() {
@@ -20,7 +33,7 @@ func main() {
 
 	channel := make(chan []string)
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 10; i++ {
 		go printCsvLine(channel)
 	}
 
@@ -53,16 +66,39 @@ func readCsv(pathFile *string, channel chan []string) {
 			panic(err)
 		}
 
-		channel <- record
-	}
+		reflect.TypeOf(record)
 
+		channel <- record
+
+		if counter%1000 == 0 {
+			if counter%10000 == 0 {
+				fmt.Print(". " + strconv.Itoa(counter/1000) + "K")
+				fmt.Println("")
+			} else {
+				fmt.Print(".")
+			}
+		}
+	}
+	fmt.Println("")
 	fmt.Println("==================================")
 	fmt.Println("Total processed lines: ", counter-1)
 	os.Exit(1)
 }
 
 func printCsvLine(channel chan []string) {
+	c := elastigo.NewConn()
+
 	for {
-		fmt.Println(<-channel)
+		record := <-channel
+
+		element := GeoElement{record[1]}
+
+		value, _ := json.Marshal(element)
+
+		_, err := c.Index("geolocations", "geoname", record[0], nil, string(value))
+
+		if err != nil {
+			panic(err)
+		}
 	}
 }

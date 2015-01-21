@@ -1,0 +1,19 @@
+{
+	"ImportPath": "github.com/anistal/go-geolastic",
+	"GoVersion": "go1.3.3",
+	"Deps": [
+		{
+			"ImportPath": "github.com/araddon/gou",
+			"Rev": "d88ffbf6bbf42f05e3021ba707c3eb08c37126e8"
+		},
+		{
+			"ImportPath": "github.com/bitly/go-hostpool",
+			"Rev": "8c2964dbe369e4f05a0b1775d12a94cb858646b8"
+		},
+		{
+			"ImportPath": "github.com/mattbaird/elastigo/lib",
+			"Comment": "v1.0-128-gbc9b2a9",
+			"Rev": "bc9b2a97449371a669b9ae61405bdbaa4f36da93"
+		}
+	]
+}
